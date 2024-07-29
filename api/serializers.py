@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Post
+from api.models import User, Post
 from datetime import datetime
 
 class UserLoginSerializer(serializers.Serializer):
