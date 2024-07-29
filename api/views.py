@@ -6,7 +6,7 @@ from .models import Post
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.db.models.query import Q
-
+from django.core.paginator import Paginator
 """
 USER REGISTRATION
 """
@@ -76,11 +76,14 @@ Get Posts
 class GetPostsView(APIView):
     serializer_class = GetPostsSerializer
     def get(self, request, slug=None):
+        paginated = False
         if not slug:
             posts = Post.objects.filter()
             published_on = request.query_params.get('published_on')
             author = request.query_params.get('author')
             search = request.query_params.get('search')
+            page = request.query_params.get('page', 0)
+            per_page = request.query_params.get('per_page', 5)
             if published_on:
                 try:
                     published_on = datetime.strptime(published_on,'%d-%m-%Y')
@@ -93,10 +96,19 @@ class GetPostsView(APIView):
                 posts = posts.filter(user_id__username=str(author))
             if search:
                 posts = posts.filter(Q(title__icontains=search) | Q(content__icontains=search))
-            serializer = PostSerailzer(posts, many=True)
+            pg = Paginator(posts, per_page=int(per_page))
+            pag = pg.get_page(int(page))
+            serializer = PostSerailzer(pag.object_list, many=True)
+            paginated = True
         else:
             serializer = PostSerailzer(Post.objects.filter(slug=slug), many=True)
-        return CustomResponse.get_success_response(message="Posts", data=serializer.data)
+        if paginated:
+            return CustomResponse.get_success_response(message="Posts", data={'data':serializer.data,'pagination':{
+                'per_page':per_page,
+                'page':page
+            }})
+        else:
+            return CustomResponse.get_success_response(message="Posts", data=serializer.data)
 
 """
 Token Generation
