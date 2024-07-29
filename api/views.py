@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from .serializers import *
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from utils.response import CustomResponse
 from .models import Post
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -11,6 +11,7 @@ from django.db.models.query import Q
 USER REGISTRATION
 """
 class UserRegisterView(APIView):
+    serializer_class = UserSerializer
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -31,12 +32,12 @@ class UserVerify(APIView):
         return CustomResponse.get_success_response("Logged In", data={"username":user.username})
         
 """
-Create, Edit, Delete and View Post
+Create, Edit and  Delete posts
 """
 class PostView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-
+    serializer_class = PostSerailzer
     def delete(self, request, slug):
         user = request.user
         post = Post.objects.filter(slug=slug, user_id=user)
@@ -69,7 +70,11 @@ class PostView(APIView):
             serializer.save()
             return CustomResponse.get_success_response(message="Post Created!", data={'slug':serializer.data['slug']})
         return CustomResponse.get_failure_response(message="Failed to create Post!", data=serializer.errors)
-
+"""
+Get Posts
+"""
+class GetPostsView(APIView):
+    serializer_class = GetPostsSerializer
     def get(self, request, slug=None):
         if not slug:
             posts = Post.objects.filter()
@@ -97,3 +102,4 @@ class PostView(APIView):
 Token Generation
 """
 class TokenView(TokenObtainPairView):pass
+class TokenRefresh(TokenRefreshView):pass

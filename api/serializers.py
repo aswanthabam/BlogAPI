@@ -2,6 +2,10 @@ from rest_framework import serializers
 from api.models import User, Post
 from datetime import datetime
 
+"""
+USER Serializers
+"""
+
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=100, required=True)
     password = serializers.CharField(required=True)
@@ -27,7 +31,9 @@ class UserSerializer(serializers.ModelSerializer):
             'password'
         ]
 
-
+"""
+POST Serializers
+"""
 
 class PostSerailzer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -95,4 +101,18 @@ class PostEditSerailzer(serializers.ModelSerializer):
         fields = [
             'title',
             'content'
+        ]
+
+"""SAMPLE"""
+
+class GetPostsSerializer(serializers.Serializer):
+    author = serializers.CharField()
+    published_on = serializers.DateField("%d-%m-%Y")
+    search = serializers.CharField()
+
+    class Meta:
+        fields = [
+            'author',
+            'published_on',
+            'search'
         ]

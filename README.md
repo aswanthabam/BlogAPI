@@ -12,6 +12,6 @@
 
 - `/api/posts [GET]` : Lists all available posts, Supports filters : `author`, `published_on`, `search`
 - `/api/posts/create/ [POST]` : Creates a new post 
-- `/api/posts/<slug>/ [GET]` : Get individual post
+- `/api/posts/<slug> [GET]` : Get individual post
 - `/api/posts/<slug>/edit/ [PATCH]` : Edits a post
 - `/api/posts/<slug>/delete/ [DELETE]` : Deletes a post
