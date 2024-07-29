@@ -82,8 +82,8 @@ class GetPostsView(APIView):
             published_on = request.query_params.get('published_on')
             author = request.query_params.get('author')
             search = request.query_params.get('search')
-            page = request.query_params.get('page', 0)
-            per_page = request.query_params.get('per_page', 5)
+            page = int(request.query_params.get('page', 0))
+            per_page = int(request.query_params.get('per_page', 5))
             if published_on:
                 try:
                     published_on = datetime.strptime(published_on,'%d-%m-%Y')
